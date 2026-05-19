@@ -9,11 +9,11 @@ const CONTRACTS = {
       name: "No Tricks",
       description: "Avoid taking tricks.",
       scoringText: "Each trick = -1 point",
-      maxText: "12 tricks total",
+      maxText: "10 tricks total after chooser removes 2 cards",
       mode: "count",
       label: "Tricks taken",
       min: 0,
-      max: 12,
+      max: 10,
       pointsPerUnit: -1,
     },
     {
@@ -22,11 +22,11 @@ const CONTRACTS = {
       description:
         "Avoid taking hearts. Hearts cannot be led unless a player only has hearts.",
       scoringText: "Each heart = -1 point",
-      maxText: "9 hearts total",
+      maxText: "8 hearts total",
       mode: "count",
       label: "Hearts taken",
       min: 0,
-      max: 9,
+      max: 8,
       pointsPerUnit: -1,
     },
     {
@@ -81,11 +81,11 @@ const CONTRACTS = {
       name: "Tricks Positive",
       description: "Take as many tricks as possible.",
       scoringText: "Each trick = +1 point",
-      maxText: "12 tricks total",
+      maxText: "10 tricks total after chooser removes 2 cards",
       mode: "count",
       label: "Tricks taken",
       min: 0,
-      max: 12,
+      max: 10,
       pointsPerUnit: 1,
     },
   ],
@@ -180,10 +180,10 @@ const CONTRACTS = {
 
 const RULES = {
   3: {
-    cards: "36 cards: A K Q J 10 9 8 7 6",
-    deal: "12 cards each",
-    remove: "Remove 2, 3, 4, 5",
-    tricks: "12 tricks per round",
+    cards: "32 cards: A K Q J 10 9 8 7",
+    deal: "Deal 10 cards to each player and 2 extra cards to the chooser",
+    remove: "Chooser removes any 2 cards from their hand before play",
+    tricks: "10 tricks per round",
   },
   4: {
     cards: "32 cards: A K Q J 10 9 8 7",
@@ -998,7 +998,8 @@ export default function KingScorekeeperApp() {
                   <p className="font-black text-slate-100">Chooser rule</p>
                   <p className="mt-1">
                     Each player can choose every mode only once. Other players
-                    can still choose that same mode.
+                    can still choose that same mode. In 3-player mode, the
+                    chooser removes any 2 cards from their hand before play.
                   </p>
                 </div>
 
