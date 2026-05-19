@@ -202,17 +202,22 @@ export default function App() {
     if (currentContract.mode === "single") {
       setCounts(() => {
         const next = {};
+
         players.forEach((player) => {
           next[player.id] = player.id === playerId;
         });
+
         return next;
       });
+
       return;
     }
 
+    const onlyNumbers = value.replace(/\D/g, "");
+
     const cleanValue = Math.max(
       currentContract.min,
-      Math.min(currentContract.max, Number(value)),
+      Math.min(currentContract.max, Number(onlyNumbers || 0)),
     );
 
     setCounts((previous) => ({
@@ -648,9 +653,8 @@ export default function App() {
                           </button>
                         ) : (
                           <input
-                            type="number"
-                            min={currentContract.min}
-                            max={currentContract.max}
+                            type="text"
+                            inputMode="numeric"
                             value={counts[player.id]}
                             onChange={(event) =>
                               updateCount(player.id, event.target.value)
@@ -697,7 +701,7 @@ export default function App() {
                   <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                     <button
                       onClick={saveRound}
-                      className="h-12 flex-1 rounded-2xl bg-amber-300 px-5 font-black text-slate-950 transition hover:bg-amber-200"
+                      className="w-full min-h-[50px] flex-1 rounded-2xl bg-amber-300 px-5 py-5 text-lg font-black text-slate-950 transition hover:bg-amber-200 active:scale-[0.99] sm:min-h-0  sm:py-0 sm:text-base"
                     >
                       {ui.saveRound}
                     </button>
