@@ -1,198 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { LANGUAGES } from "./language";
 
 const STORAGE_KEY = "king-scorekeeper-state";
-
-const CONTRACTS = {
-  3: [
-    {
-      id: "no-tricks",
-      name: "No Tricks",
-      description: "Avoid taking tricks.",
-      scoringText: "Each trick = -1 point",
-      maxText: "10 tricks total after chooser removes 2 cards",
-      mode: "count",
-      label: "Tricks taken",
-      min: 0,
-      max: 10,
-      pointsPerUnit: -1,
-    },
-    {
-      id: "no-hearts",
-      name: "No Hearts",
-      description:
-        "Avoid taking hearts. Hearts cannot be led unless a player only has hearts.",
-      scoringText: "Each heart = -1 point",
-      maxText: "8 hearts total",
-      mode: "count",
-      label: "Hearts taken",
-      min: 0,
-      max: 8,
-      pointsPerUnit: -1,
-    },
-    {
-      id: "no-jacks",
-      name: "No Jacks",
-      description: "Avoid taking Jacks.",
-      scoringText: "Each Jack = -4 points",
-      maxText: "4 jacks total",
-      mode: "count",
-      label: "Jacks taken",
-      min: 0,
-      max: 4,
-      pointsPerUnit: -4,
-    },
-    {
-      id: "no-queens",
-      name: "No Queens",
-      description: "Avoid taking Queens.",
-      scoringText: "Each Queen = -4 points",
-      maxText: "4 queens total",
-      mode: "count",
-      label: "Queens taken",
-      min: 0,
-      max: 4,
-      pointsPerUnit: -4,
-    },
-    {
-      id: "no-last-two",
-      name: "No Last Two Tricks",
-      description: "Avoid taking the last two tricks.",
-      scoringText: "Each of last two tricks = -8 points",
-      maxText: "2 scoring tricks",
-      mode: "count",
-      label: "Last two tricks taken",
-      min: 0,
-      max: 2,
-      pointsPerUnit: -8,
-    },
-    {
-      id: "no-king-heart",
-      name: "No King of Hearts",
-      description:
-        "Avoid taking K♥. Hearts cannot be led unless a player only has hearts.",
-      scoringText: "K♥ = -16 points",
-      maxText: "One card only",
-      mode: "single",
-      label: "Player who took K♥",
-      points: -16,
-    },
-    {
-      id: "tricks-positive",
-      name: "Tricks Positive",
-      description: "Take as many tricks as possible.",
-      scoringText: "Each trick = +1 point",
-      maxText: "10 tricks total after chooser removes 2 cards",
-      mode: "count",
-      label: "Tricks taken",
-      min: 0,
-      max: 10,
-      pointsPerUnit: 1,
-    },
-  ],
-
-  4: [
-    {
-      id: "no-tricks",
-      name: "No Tricks",
-      description: "Avoid taking tricks.",
-      scoringText: "Each trick = -2 points",
-      maxText: "8 tricks total",
-      mode: "count",
-      label: "Tricks taken",
-      min: 0,
-      max: 8,
-      pointsPerUnit: -2,
-    },
-    {
-      id: "no-hearts",
-      name: "No Hearts",
-      description:
-        "Avoid taking hearts. Hearts cannot be led unless a player only has hearts.",
-      scoringText: "Each heart = -2 points",
-      maxText: "8 hearts total",
-      mode: "count",
-      label: "Hearts taken",
-      min: 0,
-      max: 8,
-      pointsPerUnit: -2,
-    },
-    {
-      id: "no-jacks",
-      name: "No Jacks",
-      description: "Avoid taking Jacks.",
-      scoringText: "Each Jack = -4 points",
-      maxText: "4 jacks total",
-      mode: "count",
-      label: "Jacks taken",
-      min: 0,
-      max: 4,
-      pointsPerUnit: -4,
-    },
-    {
-      id: "no-queens",
-      name: "No Queens",
-      description: "Avoid taking Queens.",
-      scoringText: "Each Queen = -4 points",
-      maxText: "4 queens total",
-      mode: "count",
-      label: "Queens taken",
-      min: 0,
-      max: 4,
-      pointsPerUnit: -4,
-    },
-    {
-      id: "no-last-two",
-      name: "No Last Two Tricks",
-      description: "Avoid taking the last two tricks.",
-      scoringText: "Each of last two tricks = -8 points",
-      maxText: "2 scoring tricks",
-      mode: "count",
-      label: "Last two tricks taken",
-      min: 0,
-      max: 2,
-      pointsPerUnit: -8,
-    },
-    {
-      id: "no-king-heart",
-      name: "No King of Hearts",
-      description:
-        "Avoid taking K♥. Hearts cannot be led unless a player only has hearts.",
-      scoringText: "K♥ = -16 points",
-      maxText: "One card only",
-      mode: "single",
-      label: "Player who took K♥",
-      points: -16,
-    },
-    {
-      id: "tricks-positive",
-      name: "Tricks Positive",
-      description: "Take as many tricks as possible.",
-      scoringText: "Each trick = +2 points",
-      maxText: "8 tricks total",
-      mode: "count",
-      label: "Tricks taken",
-      min: 0,
-      max: 8,
-      pointsPerUnit: 2,
-    },
-  ],
-};
-
-const RULES = {
-  3: {
-    cards: "32 cards: A K Q J 10 9 8 7",
-    deal: "Deal 10 cards to each player and 2 extra cards to the chooser",
-    remove: "Chooser removes any 2 cards from their hand before play",
-    tricks: "10 tricks per round",
-  },
-  4: {
-    cards: "32 cards: A K Q J 10 9 8 7",
-    deal: "8 cards each",
-    remove: "Remove 2, 3, 4, 5, 6",
-    tricks: "8 tricks per round",
-  },
-};
-
 const defaultNames = ["", "", "", ""];
 
 function classNames(...classes) {
@@ -202,10 +11,8 @@ function classNames(...classes) {
 function loadSavedGame() {
   try {
     if (typeof window === "undefined") return null;
-
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return null;
-
     return JSON.parse(saved);
   } catch {
     return null;
@@ -214,27 +21,24 @@ function loadSavedGame() {
 
 function createEmptyCounts(players, contract) {
   const counts = {};
-
   players.forEach((player) => {
     counts[player.id] = contract.mode === "single" ? false : 0;
   });
-
   return counts;
 }
 
 function createUsedContracts(players) {
   const used = {};
-
   players.forEach((player) => {
     used[player.id] = [];
   });
-
   return used;
 }
 
-export default function KingScorekeeperApp() {
+export default function App() {
   const [savedGame] = useState(() => loadSavedGame());
 
+  const [lang, setLang] = useState(savedGame?.lang || "en");
   const [playerCount, setPlayerCount] = useState(savedGame?.playerCount || 3);
   const [names, setNames] = useState(savedGame?.names || defaultNames);
   const [chooserIndex, setChooserIndex] = useState(
@@ -245,29 +49,24 @@ export default function KingScorekeeperApp() {
   );
   const [history, setHistory] = useState(savedGame?.history || []);
   const [usedContracts, setUsedContracts] = useState(
-    savedGame?.usedContracts || {
-      p1: [],
-      p2: [],
-      p3: [],
-    },
+    savedGame?.usedContracts || { p1: [], p2: [], p3: [] },
   );
   const [counts, setCounts] = useState(
-    savedGame?.counts || {
-      p1: 0,
-      p2: 0,
-      p3: 0,
-    },
+    savedGame?.counts || { p1: 0, p2: 0, p3: 0 },
   );
   const [error, setError] = useState("");
 
-  const contracts = CONTRACTS[playerCount];
+  const language = LANGUAGES[lang] || LANGUAGES.en;
+  const ui = language.ui;
+  const contracts = language.contracts[playerCount];
+  const rules = language.rules[playerCount];
 
   const players = useMemo(() => {
     return Array.from({ length: playerCount }, (_, index) => ({
       id: `p${index + 1}`,
-      name: names[index]?.trim() || `Player ${index + 1}`,
+      name: names[index]?.trim() || `${ui.player} ${index + 1}`,
     }));
-  }, [playerCount, names]);
+  }, [playerCount, names, ui.player]);
 
   const chooser = players[chooserIndex] || players[0];
 
@@ -289,6 +88,7 @@ export default function KingScorekeeperApp() {
 
   useEffect(() => {
     const gameState = {
+      lang,
       playerCount,
       names,
       chooserIndex,
@@ -300,6 +100,7 @@ export default function KingScorekeeperApp() {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
   }, [
+    lang,
     playerCount,
     names,
     chooserIndex,
@@ -311,7 +112,6 @@ export default function KingScorekeeperApp() {
 
   const totals = useMemo(() => {
     const result = {};
-
     players.forEach((player) => {
       result[player.id] = 0;
     });
@@ -356,11 +156,9 @@ export default function KingScorekeeperApp() {
 
   const chooserProgress = useMemo(() => {
     const result = {};
-
     players.forEach((player) => {
       result[player.id] = usedContracts[player.id]?.length || 0;
     });
-
     return result;
   }, [players, usedContracts]);
 
@@ -374,7 +172,7 @@ export default function KingScorekeeperApp() {
       id: `p${index + 1}`,
     }));
     const nextUsed = createUsedContracts(nextPlayers);
-    const nextContract = CONTRACTS[nextCount][0];
+    const nextContract = language.contracts[nextCount][0];
 
     setPlayerCount(nextCount);
     setChooserIndex(0);
@@ -404,14 +202,11 @@ export default function KingScorekeeperApp() {
     if (currentContract.mode === "single") {
       setCounts(() => {
         const next = {};
-
         players.forEach((player) => {
           next[player.id] = player.id === playerId;
         });
-
         return next;
       });
-
       return;
     }
 
@@ -427,26 +222,19 @@ export default function KingScorekeeperApp() {
   }
 
   function validateRound() {
-    if (!chooser) {
-      return "Choose a player first.";
-    }
+    if (!chooser) return ui.errors.choosePlayer;
 
     if ((usedContracts[chooser.id] || []).includes(currentContract.id)) {
-      return `${chooser.name} already chose ${currentContract.name}. Choose another mode.`;
+      return ui.errors.alreadyUsed(chooser.name, currentContract.name);
     }
 
     if (currentContract.mode === "single") {
-      if (countSum !== 1) {
-        return "Choose exactly one player for King of Hearts.";
-      }
-
+      if (countSum !== 1) return ui.errors.chooseOneKing;
       return "";
     }
 
     if (countSum !== currentContract.max) {
-      return `Total ${currentContract.label.toLowerCase()} must be exactly ${
-        currentContract.max
-      }. Current total is ${countSum}.`;
+      return ui.errors.totalMustBe(currentContract.max, countSum);
     }
 
     return "";
@@ -458,9 +246,7 @@ export default function KingScorekeeperApp() {
       const nextPlayer = players[nextIndex];
       const usedCount = nextUsedContracts[nextPlayer.id]?.length || 0;
 
-      if (usedCount < contracts.length) {
-        return nextIndex;
-      }
+      if (usedCount < contracts.length) return nextIndex;
     }
 
     return currentIndex;
@@ -485,7 +271,6 @@ export default function KingScorekeeperApp() {
     };
 
     const nextHistory = [...history, roundRecord];
-
     const nextUsedContracts = {
       ...usedContracts,
       [chooser.id]: [...(usedContracts[chooser.id] || []), currentContract.id],
@@ -500,11 +285,9 @@ export default function KingScorekeeperApp() {
     );
 
     const nextChooser = players[nextChooserIndex];
-
     const nextAvailableContracts = contracts.filter((contract) => {
       return !(nextUsedContracts[nextChooser.id] || []).includes(contract.id);
     });
-
     const nextContract = nextAvailableContracts[0] || contracts[0];
 
     setChooserIndex(nextChooserIndex);
@@ -526,11 +309,9 @@ export default function KingScorekeeperApp() {
     });
 
     const lastRound = history[history.length - 1];
-
     const restoredChooserIndex = players.findIndex((player) => {
       return player.id === lastRound.chooserId;
     });
-
     const restoredContract =
       contracts.find((contract) => contract.id === lastRound.contractId) ||
       contracts[0];
@@ -564,23 +345,33 @@ export default function KingScorekeeperApp() {
           <div className="grid gap-5 p-4 sm:p-6 lg:grid-cols-[1.15fr_0.85fr] lg:p-8">
             <div>
               <div className="mb-3 inline-flex rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-200 sm:text-sm">
-                Real-life King scorekeeper
+                {ui.badge}
               </div>
 
               <h1 className="text-2xl font-black tracking-tight sm:text-5xl">
-                King Scores
+                {ui.title}
               </h1>
 
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base sm:leading-7">
-                Every player chooses each mode once. The same mode can be played
-                again by other players, but not by the same chooser.
+                {ui.subtitle}
               </p>
             </div>
 
             <div className="rounded-3xl border border-white/10 bg-white/5 p-3 sm:p-4">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 sm:text-sm">
-                Game setup
-              </p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400 sm:text-sm">
+                  {ui.gameSetup}
+                </p>
+
+                <select
+                  value={lang}
+                  onChange={(event) => setLang(event.target.value)}
+                  className="h-10 rounded-xl border border-white/10 bg-slate-950 px-3 text-sm font-bold outline-none focus:border-amber-300"
+                >
+                  <option value="en">English</option>
+                  <option value="ka">ქართული</option>
+                </select>
+              </div>
 
               <div className="mt-3 grid grid-cols-2 gap-2 sm:gap-3">
                 {[3, 4].map((count) => (
@@ -598,7 +389,7 @@ export default function KingScorekeeperApp() {
                       {count}
                     </span>
                     <span className="text-xs font-semibold sm:text-sm">
-                      players
+                      {ui.playersButton}
                     </span>
                   </button>
                 ))}
@@ -606,20 +397,20 @@ export default function KingScorekeeperApp() {
 
               <div className="mt-3 space-y-2 rounded-2xl bg-slate-950/60 p-3 text-xs text-slate-300 sm:p-4 sm:text-sm">
                 <p>
-                  <span className="font-bold text-slate-100">Deck:</span>{" "}
-                  {RULES[playerCount].cards}
+                  <span className="font-bold text-slate-100">{ui.deck}:</span>{" "}
+                  {rules.cards}
                 </p>
                 <p>
-                  <span className="font-bold text-slate-100">Deal:</span>{" "}
-                  {RULES[playerCount].deal}
+                  <span className="font-bold text-slate-100">{ui.deal}:</span>{" "}
+                  {rules.deal}
                 </p>
                 <p>
-                  <span className="font-bold text-slate-100">Remove:</span>{" "}
-                  {RULES[playerCount].remove}
+                  <span className="font-bold text-slate-100">{ui.remove}:</span>{" "}
+                  {rules.remove}
                 </p>
                 <p>
-                  <span className="font-bold text-slate-100">Tricks:</span>{" "}
-                  {RULES[playerCount].tricks}
+                  <span className="font-bold text-slate-100">{ui.tricks}:</span>{" "}
+                  {rules.tricks}
                 </p>
               </div>
             </div>
@@ -630,13 +421,13 @@ export default function KingScorekeeperApp() {
           <div className="space-y-4 sm:space-y-6">
             <div className="rounded-3xl border border-white/10 bg-slate-900 p-4 shadow-xl sm:rounded-[2rem] sm:p-5">
               <div className="mb-4 flex items-center justify-between gap-3">
-                <h2 className="text-lg font-black sm:text-xl">Players</h2>
+                <h2 className="text-lg font-black sm:text-xl">{ui.players}</h2>
 
                 <button
                   onClick={resetGame}
                   className="rounded-xl border border-white/10 px-3 py-2 text-xs font-bold text-slate-300 hover:bg-white/10 sm:text-sm"
                 >
-                  Reset
+                  {ui.reset}
                 </button>
               </div>
 
@@ -644,12 +435,12 @@ export default function KingScorekeeperApp() {
                 {players.map((player, index) => (
                   <label key={player.id} className="block">
                     <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-slate-500 sm:text-xs">
-                      Player {index + 1}
+                      {ui.player} {index + 1}
                     </span>
 
                     <input
                       value={names[index]}
-                      placeholder={`Player ${index + 1}`}
+                      placeholder={`${ui.player} ${index + 1}`}
                       onChange={(event) =>
                         updateName(index, event.target.value)
                       }
@@ -662,7 +453,7 @@ export default function KingScorekeeperApp() {
 
             <div className="rounded-3xl border border-white/10 bg-slate-900 p-4 shadow-xl sm:rounded-[2rem] sm:p-5">
               <h2 className="mb-4 text-lg font-black sm:text-xl">
-                Chooser progress
+                {ui.chooserProgress}
               </h2>
 
               <div className="space-y-3">
@@ -695,7 +486,9 @@ export default function KingScorekeeperApp() {
             </div>
 
             <div className="rounded-3xl border border-white/10 bg-slate-900 p-4 shadow-xl sm:rounded-[2rem] sm:p-5">
-              <h2 className="mb-4 text-lg font-black sm:text-xl">Scoreboard</h2>
+              <h2 className="mb-4 text-lg font-black sm:text-xl">
+                {ui.scoreboard}
+              </h2>
 
               <div className="space-y-3">
                 {rankedPlayers.map((player, index) => (
@@ -713,7 +506,7 @@ export default function KingScorekeeperApp() {
                         {index + 1}. {player.name}
                       </p>
                       <p className="text-xs text-slate-400 sm:text-sm">
-                        Total score
+                        {ui.totalScore}
                       </p>
                     </div>
 
@@ -738,25 +531,24 @@ export default function KingScorekeeperApp() {
               <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500 sm:text-sm">
-                    Round {Math.min(history.length + 1, totalRounds)} /{" "}
+                    {ui.round} {Math.min(history.length + 1, totalRounds)} /{" "}
                     {totalRounds}
                   </p>
 
                   <h2 className="mt-1 text-xl font-black sm:text-2xl">
                     {gameFinished
-                      ? "Game finished"
-                      : `${chooser?.name}'s choice`}
+                      ? ui.gameFinished
+                      : ui.chooserChoice(chooser?.name)}
                   </h2>
 
                   <p className="mt-2 text-sm text-slate-300 sm:text-base">
-                    {gameFinished
-                      ? "All players used every mode once."
-                      : "Choose one mode that this player has not used yet."}
+                    {gameFinished ? ui.allModesUsed : ui.chooseUnusedMode}
                   </p>
                 </div>
 
                 <div className="rounded-2xl bg-amber-300/15 px-4 py-3 text-sm font-black text-amber-200">
-                  {contracts.length} modes × {playerCount} players
+                  {contracts.length} {ui.modes} × {playerCount}{" "}
+                  {ui.playersButton}
                 </div>
               </div>
 
@@ -766,7 +558,6 @@ export default function KingScorekeeperApp() {
                     const isUsed = (usedContracts[chooser?.id] || []).includes(
                       contract.id,
                     );
-
                     const isSelected = currentContract.id === contract.id;
 
                     return (
@@ -788,9 +579,7 @@ export default function KingScorekeeperApp() {
                       >
                         <p className="text-sm font-black">{contract.name}</p>
                         <p className="mt-1 text-xs text-slate-500">
-                          {isUsed
-                            ? "Already used by this player"
-                            : contract.scoringText}
+                          {isUsed ? ui.alreadyUsed : contract.scoringText}
                         </p>
                       </button>
                     );
@@ -812,7 +601,7 @@ export default function KingScorekeeperApp() {
                     <div className="mt-3 grid gap-3 sm:grid-cols-2">
                       <div className="rounded-2xl bg-slate-900 p-3">
                         <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 sm:text-xs">
-                          Scoring
+                          {ui.scoring}
                         </p>
                         <p className="mt-1 text-sm font-bold sm:text-base">
                           {currentContract.scoringText}
@@ -821,7 +610,7 @@ export default function KingScorekeeperApp() {
 
                       <div className="rounded-2xl bg-slate-900 p-3">
                         <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 sm:text-xs">
-                          Round total
+                          {ui.roundTotal}
                         </p>
                         <p className="mt-1 text-sm font-bold sm:text-base">
                           {currentContract.maxText}
@@ -855,7 +644,7 @@ export default function KingScorekeeperApp() {
                                 : "border-white/10 bg-slate-900 hover:bg-slate-800",
                             )}
                           >
-                            {counts[player.id] ? "Selected" : "Choose"}
+                            {counts[player.id] ? ui.selected : ui.choose}
                           </button>
                         ) : (
                           <input
@@ -888,11 +677,11 @@ export default function KingScorekeeperApp() {
 
                   {currentContract.mode !== "single" && (
                     <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
-                      Current total:{" "}
+                      {ui.currentTotal}:{" "}
                       <span className="font-black text-slate-100">
                         {countSum}
                       </span>{" "}
-                      / required{" "}
+                      / {ui.required}{" "}
                       <span className="font-black text-slate-100">
                         {currentContract.max}
                       </span>
@@ -910,14 +699,14 @@ export default function KingScorekeeperApp() {
                       onClick={saveRound}
                       className="h-12 flex-1 rounded-2xl bg-amber-300 px-5 font-black text-slate-950 transition hover:bg-amber-200"
                     >
-                      Save round
+                      {ui.saveRound}
                     </button>
 
                     <button
                       onClick={undoLastRound}
                       className="h-12 rounded-2xl border border-white/10 px-5 font-black text-slate-300 transition hover:bg-white/10"
                     >
-                      Undo last
+                      {ui.undoLast}
                     </button>
                   </div>
                 </>
@@ -926,21 +715,21 @@ export default function KingScorekeeperApp() {
 
             <div className="rounded-3xl border border-white/10 bg-slate-900 p-4 shadow-xl sm:rounded-[2rem] sm:p-5">
               <h2 className="mb-4 text-lg font-black sm:text-xl">
-                Round history
+                {ui.roundHistory}
               </h2>
 
               {history.length === 0 ? (
                 <p className="rounded-2xl bg-slate-950 p-4 text-sm text-slate-400 sm:text-base">
-                  No rounds saved yet.
+                  {ui.noRounds}
                 </p>
               ) : (
                 <div className="overflow-x-auto pb-1">
                   <table className="w-full min-w-[700px] border-separate border-spacing-y-2 text-left text-sm">
                     <thead className="text-slate-500">
                       <tr>
-                        <th className="px-3 py-2">Round</th>
-                        <th className="px-3 py-2">Chooser</th>
-                        <th className="px-3 py-2">Mode</th>
+                        <th className="px-3 py-2">{ui.round}</th>
+                        <th className="px-3 py-2">{ui.chooser}</th>
+                        <th className="px-3 py-2">{ui.mode}</th>
 
                         {players.map((player) => (
                           <th key={player.id} className="px-3 py-2 text-right">
@@ -951,37 +740,43 @@ export default function KingScorekeeperApp() {
                     </thead>
 
                     <tbody>
-                      {history.map((round) => (
-                        <tr key={round.roundNumber} className="bg-slate-950">
-                          <td className="rounded-l-2xl px-3 py-3 font-bold">
-                            {round.roundNumber}
-                          </td>
+                      {history.map((round) => {
+                        const translatedContract = contracts.find(
+                          (contract) => contract.id === round.contractId,
+                        );
 
-                          <td className="px-3 py-3 font-bold">
-                            {round.chooserName}
-                          </td>
-
-                          <td className="px-3 py-3 font-bold">
-                            {round.contractName}
-                          </td>
-
-                          {players.map((player, playerIndex) => (
-                            <td
-                              key={player.id}
-                              className={classNames(
-                                "px-3 py-3 text-right font-black",
-                                playerIndex === players.length - 1 &&
-                                  "rounded-r-2xl",
-                                round.scores[player.id] >= 0
-                                  ? "text-emerald-300"
-                                  : "text-rose-300",
-                              )}
-                            >
-                              {round.scores[player.id] || 0}
+                        return (
+                          <tr key={round.roundNumber} className="bg-slate-950">
+                            <td className="rounded-l-2xl px-3 py-3 font-bold">
+                              {round.roundNumber}
                             </td>
-                          ))}
-                        </tr>
-                      ))}
+
+                            <td className="px-3 py-3 font-bold">
+                              {round.chooserName}
+                            </td>
+
+                            <td className="px-3 py-3 font-bold">
+                              {translatedContract?.name || round.contractName}
+                            </td>
+
+                            {players.map((player, playerIndex) => (
+                              <td
+                                key={player.id}
+                                className={classNames(
+                                  "px-3 py-3 text-right font-black",
+                                  playerIndex === players.length - 1 &&
+                                    "rounded-r-2xl",
+                                  round.scores[player.id] >= 0
+                                    ? "text-emerald-300"
+                                    : "text-rose-300",
+                                )}
+                              >
+                                {round.scores[player.id] || 0}
+                              </td>
+                            ))}
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -990,42 +785,19 @@ export default function KingScorekeeperApp() {
 
             <div className="rounded-3xl border border-white/10 bg-slate-900 p-4 shadow-xl sm:rounded-[2rem] sm:p-5">
               <h2 className="mb-4 text-lg font-black sm:text-xl">
-                Rules reminder
+                {ui.rulesReminder}
               </h2>
 
               <div className="grid gap-3 text-sm text-slate-300 sm:grid-cols-2">
-                <div className="rounded-2xl bg-slate-950 p-4">
-                  <p className="font-black text-slate-100">Chooser rule</p>
-                  <p className="mt-1">
-                    Each player can choose every mode only once. Other players
-                    can still choose that same mode. In 3-player mode, the
-                    chooser removes any 2 cards from their hand before play.
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-slate-950 p-4">
-                  <p className="font-black text-slate-100">No fixed order</p>
-                  <p className="mt-1">
-                    The app moves the chooser turn around the table, but the
-                    chooser picks any unused mode.
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-slate-950 p-4">
-                  <p className="font-black text-slate-100">Must follow suit</p>
-                  <p className="mt-1">
-                    If the led card is diamonds and you have diamonds, you must
-                    play diamonds.
-                  </p>
-                </div>
-
-                <div className="rounded-2xl bg-slate-950 p-4">
-                  <p className="font-black text-slate-100">Winner</p>
-                  <p className="mt-1">
-                    After all modes are used by every player, the highest score
-                    wins.
-                  </p>
-                </div>
+                {ui.ruleCards.map((rule) => (
+                  <div
+                    key={rule.title}
+                    className="rounded-2xl bg-slate-950 p-4"
+                  >
+                    <p className="font-black text-slate-100">{rule.title}</p>
+                    <p className="mt-1">{rule.text}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
